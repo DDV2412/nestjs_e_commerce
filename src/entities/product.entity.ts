@@ -32,6 +32,15 @@ export const Product = new mongoose.Schema({
     type: Number,
     required: [true, 'Please enter product stock'],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 export const ProductSchema = mongoose.model('Product', Product);

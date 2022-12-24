@@ -21,6 +21,15 @@ export const WarrantyClaim = new mongoose.Schema({
   },
 
   details: [],
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 export const WarrantyClaimSchema = mongoose.model(

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IUser } from 'src/interfaces/user.interface';
-import { jwtConstants } from 'src/utils/auth.constant';
+import { IUser } from '../interfaces/user.interface';
+import { jwtConstants } from '../utils/auth.constant';
 import { UserDTORegister, UserDTOLogin, UserDTO } from '../dto/user.dto';
 import { UserRepo } from '../repository/user.repository';
 import { hashSync } from 'bcrypt';
