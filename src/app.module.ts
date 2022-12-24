@@ -8,16 +8,21 @@ import { DatabaseModule } from './database/database.module';
 import { UserProviders } from './providers/user.provider';
 import { ProductProviders } from './providers/product.provider';
 import { UserRepo } from './repository/user.repository';
-import { UserService } from './services/user.service';
+import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { ProductRepo } from './repository/product.repository';
 import { ProductService } from './services/product.service';
 import { ProductController } from './controllers/product.controller';
-import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './utils/auth.constant';
 import { JwtStrategy } from './middleware/auth.passport';
+import { UserService } from './services/user.service';
+import { UserController } from './controllers/user.controller';
+import { WarrantyProviders } from './providers/warranty.provider';
+import { WarrantyRepo } from './repository/warrantyClaim.repository';
+import { WarrantySevice } from './services/warrantyClaim.service';
+import { WarrantyController } from './controllers/warrantyClaim.controller';
 
 @Module({
   imports: [
@@ -25,12 +30,9 @@ import { JwtStrategy } from './middleware/auth.passport';
       dest: join(__dirname, '/upload'),
     }),
     DatabaseModule,
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-    }),
     PassportModule,
     JwtModule.register({
-      secret: jwtConstants.secret,
+      secret: String(jwtConstants.secret),
       signOptions: { expiresIn: '1h' },
     }),
   ],
@@ -40,16 +42,22 @@ import { JwtStrategy } from './middleware/auth.passport';
     AuthController,
     FileUpload,
     ProductController,
+    UserController,
+    WarrantyController,
   ],
   providers: [
     AppService,
     UserProviders,
     ProductProviders,
+    WarrantyProviders,
     UserRepo,
+    AuthService,
     UserService,
     ProductRepo,
     ProductService,
     JwtStrategy,
+    WarrantyRepo,
+    WarrantySevice,
   ],
 })
 export class AppModule {}

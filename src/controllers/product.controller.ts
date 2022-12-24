@@ -8,18 +8,31 @@ import {
   Param,
   Delete,
   Get,
+  UseGuards,
 } from '@nestjs/common';
 import { ResponseData } from '../dto/response.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger/dist';
 import { ProductService } from '../services/product.service';
 import { ProductDTO } from 'src/dto/product.dto';
+import { JwtAuthGuard } from 'src/utils/jwt.guard';
+import { Roles } from 'src/utils/roles.decorator';
+import { SecurityType } from 'src/utils/enum';
+import { RolesGuard } from 'src/utils/roles.guard';
 
 @Controller('/api/product')
 @ApiTags('Product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Roles(SecurityType.STAF)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new product' })
   @ApiResponse({
     status: 201,
@@ -57,7 +70,10 @@ export class ProductController {
     }
   }
 
+  @Roles(SecurityType.STAF)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update product by ID' })
   @ApiResponse({
     status: 200,
@@ -106,7 +122,10 @@ export class ProductController {
     }
   }
 
+  @Roles(SecurityType.STAF)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete product by ID' })
   @ApiResponse({
     status: 200,

@@ -12,6 +12,7 @@ async function bootstrap() {
     .setDescription('The E_Commerce API')
     .setVersion('1.0')
     .addTag('Authentication')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/documentation', app, document);
