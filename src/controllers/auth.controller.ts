@@ -1,9 +1,14 @@
-import { Controller, Post, Body, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserService } from 'src/services/user.service';
 import { UserDTOLogin, UserDTORegister } from '../dto/user.dto';
 import { ResponseData } from '../dto/response.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
-import { User } from '../schema/user.schema';
 
 @Controller('/api/auth')
 @ApiTags('Authentication')
@@ -12,11 +17,10 @@ export class AuthController {
 
   @Post('/register')
   @ApiOperation({ summary: 'Customer register' })
-  @HttpCode(201)
   @ApiResponse({
     status: 201,
     description: 'Customer has been created successfully',
-    type: User,
+    type: UserDTORegister,
   })
   async getRegister(@Body() userData: UserDTORegister): Promise<ResponseData> {
     try {
@@ -28,21 +32,23 @@ export class AuthController {
         payload: customer,
       };
     } catch (err) {
-      return {
-        status: false,
-        message: 'Error: Customer not created!',
-        payload: null,
-      };
+      throw new HttpException(
+        {
+          status: false,
+          message: `Customer with ${userData.email} not available or password wrong`,
+          payload: null,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   @Post('/login')
-  @HttpCode(200)
   @ApiOperation({ summary: 'Customer login' })
   @ApiResponse({
     status: 200,
     description: 'Customer has been login successfully',
-    type: User,
+    type: UserDTOLogin,
   })
   async getLogin(@Body() userData: UserDTOLogin): Promise<ResponseData> {
     try {
@@ -62,11 +68,14 @@ export class AuthController {
         payload: customer,
       };
     } catch (err) {
-      return {
-        status: false,
-        message: `Error: Customer with ${userData.email} not available`,
-        payload: null,
-      };
+      throw new HttpException(
+        {
+          status: false,
+          message: `Customer with ${userData.email} not available or password wrong`,
+          payload: null,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

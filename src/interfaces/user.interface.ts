@@ -5,7 +5,7 @@ export interface IUser extends Document {
 
   readonly email: string;
 
-  password: string;
+  readonly password: string;
 
   readonly roleName: string;
 

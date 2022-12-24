@@ -1,6 +1,5 @@
 import {
   IsEmail,
-  IsEmpty,
   IsEnum,
   IsNotEmpty,
   IsString,
@@ -33,13 +32,10 @@ export class UserDTORegister {
   @IsEnum(SecurityType)
   @ApiProperty({
     example: 'CUSTOMER',
+    name: 'role name',
     description: 'The role name of the User',
   })
   readonly roleName: string;
-
-  @IsEmpty()
-  @ApiProperty({ example: null, description: 'The photo profile of the User' })
-  readonly photoProfile: string | null;
 }
 
 export class UserDTOLogin {
