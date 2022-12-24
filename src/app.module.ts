@@ -13,6 +13,11 @@ import { AuthController } from './controllers/auth.controller';
 import { ProductRepo } from './repository/product.repository';
 import { ProductService } from './services/product.service';
 import { ProductController } from './controllers/product.controller';
+import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './utils/auth.constant';
+import { JwtStrategy } from './middleware/auth.passport';
 
 @Module({
   imports: [
@@ -20,6 +25,14 @@ import { ProductController } from './controllers/product.controller';
       dest: join(__dirname, '/upload'),
     }),
     DatabaseModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
+    PassportModule,
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1h' },
+    }),
   ],
   controllers: [
     AppController,
@@ -36,6 +49,7 @@ import { ProductController } from './controllers/product.controller';
     UserService,
     ProductRepo,
     ProductService,
+    JwtStrategy,
   ],
 })
 export class AppModule {}

@@ -32,7 +32,7 @@ export class UserDTORegister {
   @IsEnum(SecurityType)
   @ApiProperty({
     example: 'CUSTOMER',
-    name: 'role name',
+    name: 'Role name',
     description: 'The role name of the User',
   })
   readonly roleName: string;
