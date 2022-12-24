@@ -9,4 +9,23 @@ export class ProductRepo {
   addProduct = async (productData: ProductDTO): Promise<ProductDTO> => {
     return await new this.productModel(productData).save();
   };
+
+  getAllProduct = async (): Promise<ProductDTO[]> => {
+    return await this.productModel.find();
+  };
+
+  getProductById = async (id: string): Promise<ProductDTO | null> => {
+    return await this.productModel.findById(id);
+  };
+
+  updateProduct = async (
+    id: string,
+    productUpdate: ProductDTO,
+  ): Promise<ProductDTO | null> => {
+    return await this.productModel.findByIdAndUpdate(id, productUpdate);
+  };
+
+  deleteProduct = async (id: string): Promise<ProductDTO | null> => {
+    return await this.productModel.findByIdAndRemove(id);
+  };
 }

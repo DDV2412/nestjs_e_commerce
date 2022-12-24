@@ -22,6 +22,11 @@ export class AuthController {
     description: 'Customer has been created successfully',
     type: UserDTORegister,
   })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    type: UserDTORegister,
+  })
   async getRegister(@Body() userData: UserDTORegister): Promise<ResponseData> {
     try {
       const customer = await this.userService.getRegister(userData);
@@ -48,6 +53,11 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Customer has been login successfully',
+    type: UserDTOLogin,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
     type: UserDTOLogin,
   })
   async getLogin(@Body() userData: UserDTOLogin): Promise<ResponseData> {

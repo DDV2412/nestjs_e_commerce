@@ -14,12 +14,21 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Response } from 'express';
-import { ApiTags } from '@nestjs/swagger/dist';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
 
 @Controller('/api/upload')
 @ApiTags('File Upload')
 export class FileUpload {
   @Post()
+  @ApiOperation({ summary: 'Upload File' })
+  @ApiResponse({
+    status: 200,
+    description: 'Upload file has been successfully',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
   @HttpCode(200)
   @UseInterceptors(
     FileInterceptor('image', {
@@ -64,12 +73,29 @@ export class FileUpload {
 
   @Get(':imgpath')
   @HttpCode(200)
+  @ApiOperation({ summary: 'Upload Files' })
+  @ApiResponse({
+    status: 200,
+    description: 'Upload files has been successfully',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
   seeUploadedFile(@Param('imgpath') path: string, @Res() res: Response) {
     return res.sendFile(path, { root: join(__dirname, '/../upload') });
   }
 
   @Post('/multiple')
   @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully load files path',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
   @UseInterceptors(
     FilesInterceptor('image', 10, {
       storage: diskStorage({
