@@ -8,6 +8,8 @@ import {
   Param,
   Get,
   UseGuards,
+  Req,
+  Request,
 } from '@nestjs/common';
 import { ResponseData } from '../dto/response.dto';
 import {
@@ -16,21 +18,28 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger/dist';
-import { JwtAuthGuard } from 'src/utils/jwt.guard';
-import { Roles } from 'src/utils/roles.decorator';
+import { JwtAuthGuard } from '../utils/jwt.guard';
+import { Roles } from '../utils/roles.decorator';
 import { SecurityType, Status } from 'src/utils/enum';
-import { RolesGuard } from 'src/utils/roles.guard';
-import { WarrantySevice } from '../services/warrantyClaim.service';
+import { RolesGuard } from '../utils/roles.guard';
 import { WarrantyDTO } from '../dto/warranty.dto';
+import { ErrorDTO } from '../dto/error.dto';
+import { ProductService } from '../services/product.service';
+import { WarrantyClaimService } from '../services/warrantyClaim.service';
+import { AuthService } from '../services/auth.service';
 
 @Controller('/api/warranty/claim')
 @ApiTags('Warranty Claim')
 export class WarrantyController {
-  constructor(private readonly WarrantyService: WarrantySevice) {}
+  constructor(
+    private readonly WarrantyService: WarrantyClaimService,
+    private readonly productService: ProductService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Roles(SecurityType.CUSTOMER)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post()
+  @Post(':productId')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new Warranti claim' })
   @ApiResponse({
@@ -46,11 +55,39 @@ export class WarrantyController {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: WarrantyDTO,
+    type: ErrorDTO,
   })
-  async addWarranty(@Body() warrantyData: WarrantyDTO): Promise<ResponseData> {
+  async addWarranty(
+    @Req() req: Request | any,
+    @Param('productId') productId: string,
+    @Body() warrantyData: WarrantyDTO,
+  ): Promise<ResponseData> {
     try {
-      const claim = await this.WarrantyService.addWarranty(warrantyData);
+      const product = await this.productService.getProductById(productId);
+
+      if (!product) {
+        return {
+          status: false,
+          message: `Product with ${productId} not found!`,
+          payload: null,
+        };
+      }
+      const profile = await this.authService.getProfile(req['user']['email']);
+
+      if (!profile) {
+        return {
+          status: false,
+          message: `Please re-login to submit a warranty claim`,
+          payload: null,
+        };
+      }
+      const claim = await this.WarrantyService.addWarranty({
+        product: product,
+        customer: profile,
+        warrantyNumber: warrantyData.warrantyNumber,
+        isStatus: Status.PENDING,
+        details: warrantyData.details,
+      });
 
       return {
         status: true,
@@ -82,19 +119,21 @@ export class WarrantyController {
   @ApiResponse({
     status: 404,
     description: 'Warranti claim with id not found!',
-    type: WarrantyDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: WarrantyDTO,
+    type: ErrorDTO,
   })
   async updateStatus(
     @Param('id') id: string,
-    @Body() status: Status,
+    @Body() isStatus: Status,
   ): Promise<ResponseData> {
     try {
-      const claim = await this.WarrantyService.updateStatus(id, status);
+      console.log(isStatus);
+
+      const claim = await this.WarrantyService.updateStatus(id, isStatus);
 
       if (!claim) {
         return {
@@ -131,12 +170,12 @@ export class WarrantyController {
   @ApiResponse({
     status: 404,
     description: 'Warranti claim with id not found!',
-    type: WarrantyDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: WarrantyDTO,
+    type: ErrorDTO,
   })
   async getWarrantyById(@Param('id') id: string): Promise<ResponseData> {
     try {
@@ -170,6 +209,7 @@ export class WarrantyController {
   @Roles(SecurityType.STAF)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get list Warranti claims' })
   @ApiResponse({
     status: 200,
@@ -179,7 +219,7 @@ export class WarrantyController {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: WarrantyDTO,
+    type: ErrorDTO,
   })
   async getAllWarranty(): Promise<ResponseData> {
     try {

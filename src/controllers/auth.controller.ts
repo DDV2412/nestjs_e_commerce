@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
   Request,
+  Put,
 } from '@nestjs/common';
 import { AuthService } from 'src/services/auth.service';
 import { UserDTOLogin, UserDTORegister, UserDTO } from '../dto/user.dto';
@@ -19,6 +20,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger/dist';
 import { JwtAuthGuard } from '../utils/jwt.guard';
+import { ErrorDTO } from '../dto/error.dto';
+import { PasswordDTO } from 'src/dto/password.dto';
 
 @Controller('/api')
 @ApiTags('Authentication')
@@ -68,7 +71,7 @@ export class AuthController {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTOLogin,
+    type: ErrorDTO,
   })
   async getLogin(@Body() userData: UserDTOLogin): Promise<ResponseData> {
     try {
@@ -111,7 +114,7 @@ export class AuthController {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   async getProfile(@Req() req: Request | any): Promise<ResponseData> {
     const profile = await this.authService.getProfile(req['user']['email']);
@@ -120,6 +123,99 @@ export class AuthController {
       status: true,
       message: 'User has been access profile successfully',
       payload: profile,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/profile/password/update')
+  @ApiOperation({ summary: 'Customer / Staf update password' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Customer / Staf has been updated password successfully',
+    type: UserDTO,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    type: ErrorDTO,
+  })
+  async getUpdatePassword(
+    @Req() req: Request | any,
+    @Body()
+    passwordData: PasswordDTO,
+  ): Promise<ResponseData> {
+    const profile = await this.authService.getProfile(req['user']['email']);
+
+    if (!profile) {
+      return {
+        status: false,
+        message: `Please re-login to submit a warranty claim`,
+        payload: null,
+      };
+    }
+
+    if (passwordData.password === passwordData.currentPassword) {
+      return {
+        status: false,
+        message: `Password not available`,
+        payload: null,
+      };
+    }
+
+    if (passwordData.password !== passwordData.confirmPassword) {
+      return {
+        status: false,
+        message: `Password not match`,
+        payload: null,
+      };
+    }
+
+    const update = await this.authService.updatePassword(
+      profile.id,
+      passwordData.password,
+    );
+    return {
+      status: true,
+      message: 'User has been updated password successfully',
+      payload: update,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/profile/update')
+  @ApiOperation({ summary: 'Customer / Staf update profile' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Customer / Staf has been updated profile successfully',
+    type: UserDTO,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    type: ErrorDTO,
+  })
+  async getUpdateProfile(
+    @Req() req: Request | any,
+    @Body()
+    userData: UserDTO,
+  ): Promise<ResponseData> {
+    const profile = await this.authService.getProfile(req['user']['email']);
+
+    if (!profile) {
+      return {
+        status: false,
+        message: `Please re-login to submit a warranty claim`,
+        payload: null,
+      };
+    }
+
+    const update = await this.authService.updateProfile(profile.id, userData);
+    return {
+      status: true,
+      message: 'User has been updated profile successfully',
+      payload: update,
     };
   }
 }

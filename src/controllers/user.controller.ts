@@ -16,9 +16,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger/dist';
+import { ErrorDTO } from 'src/dto/error.dto';
 import { UserDTO } from 'src/dto/user.dto';
 import { UserService } from 'src/services/user.service';
-import { SecurityType } from 'src/utils/enum';
+import { SecurityType, Status } from 'src/utils/enum';
 import { JwtAuthGuard } from 'src/utils/jwt.guard';
 import { Roles } from 'src/utils/roles.decorator';
 import { RolesGuard } from 'src/utils/roles.guard';
@@ -42,21 +43,21 @@ export class UserController {
   @ApiResponse({
     status: 400,
     description: 'User with name not created!',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   async addUser(@Body() userData: UserDTO): Promise<ResponseData> {
     try {
-      const product = await this.userService.addUser(userData);
+      const customer = await this.userService.addUser(userData);
 
       return {
         status: true,
         message: 'User has been created successfully',
-        payload: product,
+        payload: customer,
       };
     } catch (err) {
       throw new HttpException(
@@ -74,30 +75,30 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'User product by ID' })
+  @ApiOperation({ summary: 'Update status account customer' })
   @ApiResponse({
     status: 200,
-    description: 'User has been updated successfully',
+    description: 'Staf has been updated status successfully',
     type: UserDTO,
   })
   @ApiResponse({
     status: 404,
     description: 'User with id not found!',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTO,
+    type: ErrorDTO,
   })
-  async updateUser(
+  async updateStatus(
     @Param('id') id: string,
-    @Body() userData: UserDTO,
+    @Body() isStatus: Status,
   ): Promise<ResponseData> {
     try {
-      const product = await this.userService.updateUser(id, userData);
+      const customer = await this.userService.updateStatus(id, isStatus);
 
-      if (!product) {
+      if (!customer) {
         return {
           status: false,
           message: `User with ${id} not found!`,
@@ -108,7 +109,7 @@ export class UserController {
       return {
         status: true,
         message: 'User has been updated successfully',
-        payload: product,
+        payload: customer,
       };
     } catch (err) {
       throw new HttpException(
@@ -126,7 +127,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete product by ID' })
+  @ApiOperation({ summary: 'Delete customer by ID' })
   @ApiResponse({
     status: 200,
     description: 'User has been deleted successfully',
@@ -135,12 +136,12 @@ export class UserController {
   @ApiResponse({
     status: 404,
     description: 'User with id not found!',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   async deleteUser(@Param('id') id: string): Promise<ResponseData> {
     try {
@@ -176,18 +177,18 @@ export class UserController {
   @ApiResponse({
     status: 404,
     description: 'User with id not found!',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   async getUserById(@Param('id') id: string): Promise<ResponseData> {
     try {
-      const product = await this.userService.getUserById(id);
+      const customer = await this.userService.getUserById(id);
 
-      if (!product) {
+      if (!customer) {
         return {
           status: false,
           message: `User with ${id} not found!`,
@@ -198,7 +199,7 @@ export class UserController {
       return {
         status: true,
         message: 'Successfully get user by ID',
-        payload: product,
+        payload: customer,
       };
     } catch (err) {
       throw new HttpException(
@@ -225,16 +226,16 @@ export class UserController {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: UserDTO,
+    type: ErrorDTO,
   })
   async getAllUser(): Promise<ResponseData> {
     try {
-      const product = await this.userService.getAllUser();
+      const customer = await this.userService.getAllUser();
 
       return {
         status: true,
         message: 'Successfully get all users',
-        payload: product,
+        payload: customer,
       };
     } catch (err) {
       throw new HttpException(

@@ -22,7 +22,9 @@ export class ProductRepo {
     id: string,
     productUpdate: ProductDTO,
   ): Promise<ProductDTO | null> => {
-    return await this.productModel.findByIdAndUpdate(id, productUpdate);
+    await this.productModel.findByIdAndUpdate(id, productUpdate);
+
+    return await this.getProductById(id);
   };
 
   deleteProduct = async (id: string): Promise<ProductDTO | null> => {

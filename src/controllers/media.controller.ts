@@ -9,17 +9,29 @@ import {
   UploadedFiles,
   Get,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { Response } from 'express';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger/dist';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger/dist';
+import { ErrorDTO } from 'src/dto/error.dto';
+import { JwtAuthGuard } from 'src/utils/jwt.guard';
 
 @Controller('/api/upload')
 @ApiTags('File Upload')
 export class FileUpload {
+  @UseGuards(JwtAuthGuard)
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Upload File' })
   @ApiResponse({
     status: 200,
@@ -28,6 +40,19 @@ export class FileUpload {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
+    type: ErrorDTO,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @HttpCode(200)
   @UseInterceptors(
@@ -81,13 +106,16 @@ export class FileUpload {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
+    type: ErrorDTO,
   })
   seeUploadedFile(@Param('imgpath') path: string, @Res() res: Response) {
     return res.sendFile(path, { root: join(__dirname, '/../upload') });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/multiple')
   @HttpCode(200)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Successfully load files path',
@@ -95,6 +123,19 @@ export class FileUpload {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
+    type: ErrorDTO,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @UseInterceptors(
     FilesInterceptor('image', 10, {

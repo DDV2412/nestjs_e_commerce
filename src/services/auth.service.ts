@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/interfaces/user.interface';
 import { jwtConstants } from 'src/utils/auth.constant';
-import { UserDTORegister, UserDTOLogin } from '../dto/user.dto';
+import { UserDTORegister, UserDTOLogin, UserDTO } from '../dto/user.dto';
 import { UserRepo } from '../repository/user.repository';
+import { hashSync } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -87,11 +88,18 @@ export class AuthService {
     return await this.userRepo.getUserByEmail(email);
   };
 
-  updateProfile = async (): Promise<void> => {
-    console.log();
+  updateProfile = async (
+    id: string,
+    userData: UserDTO,
+  ): Promise<UserDTO | null> => {
+    return await this.userRepo.updateUser(id, userData);
   };
 
-  updatePassword = async (): Promise<void> => {
-    console.log();
+  updatePassword = async (
+    id: string,
+    password: string,
+  ): Promise<UserDTO | null> => {
+    const hashPass = hashSync(password, 12);
+    return await this.userRepo.updateUser(id, { password: hashPass });
   };
 }

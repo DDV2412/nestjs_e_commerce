@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { Status } from 'src/utils/enum';
 
 export interface IUser extends Document {
   readonly name: string;
@@ -9,9 +10,7 @@ export interface IUser extends Document {
 
   readonly roleName: string;
 
-  readonly isVerify: boolean;
-
-  readonly isStatus: boolean;
+  readonly isStatus: Status;
 
   readonly photoProfile: string;
 }

@@ -21,7 +21,7 @@ import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
 import { WarrantyProviders } from './providers/warranty.provider';
 import { WarrantyRepo } from './repository/warrantyClaim.repository';
-import { WarrantySevice } from './services/warrantyClaim.service';
+import { WarrantyClaimService } from './services/warrantyClaim.service';
 import { WarrantyController } from './controllers/warrantyClaim.controller';
 
 @Module({
@@ -57,7 +57,7 @@ import { WarrantyController } from './controllers/warrantyClaim.controller';
     ProductService,
     JwtStrategy,
     WarrantyRepo,
-    WarrantySevice,
+    WarrantyClaimService,
   ],
 })
 export class AppModule {}

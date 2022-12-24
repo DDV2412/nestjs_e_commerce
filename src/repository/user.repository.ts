@@ -44,11 +44,10 @@ export class UserRepo {
     return await new this.userModel(userData).save();
   };
 
-  updateUser = async (
-    id: string,
-    userUpdate: UserDTO,
-  ): Promise<UserDTO | null> => {
-    return await this.userModel.findByIdAndUpdate(id, userUpdate);
+  updateUser = async (id: string, data: any): Promise<UserDTO | null> => {
+    await this.userModel.findByIdAndUpdate(id, data);
+
+    return await this.getUserById(id);
   };
 
   deleteUser = async (id: string): Promise<UserDTO | null> => {

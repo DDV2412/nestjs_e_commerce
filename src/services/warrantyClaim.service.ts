@@ -4,7 +4,7 @@ import { WarrantyRepo } from 'src/repository/warrantyClaim.repository';
 import { Status } from 'src/utils/enum';
 
 @Injectable()
-export class WarrantySevice {
+export class WarrantyClaimService {
   constructor(private readonly warrantyRepo: WarrantyRepo) {}
 
   addWarranty = async (warrantyData: WarrantyDTO): Promise<WarrantyDTO> => {
@@ -21,8 +21,8 @@ export class WarrantySevice {
 
   updateStatus = async (
     id: string,
-    updateStatus: Status,
+    isStatus: Status,
   ): Promise<WarrantyDTO | null> => {
-    return await this.warrantyRepo.updateStatus(id, updateStatus);
+    return await this.warrantyRepo.updateStatus(id, isStatus);
   };
 }

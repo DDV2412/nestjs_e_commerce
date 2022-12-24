@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserDTO } from 'src/dto/user.dto';
+import { Status } from 'src/utils/enum';
 import { UserRepo } from '../repository/user.repository';
 
 @Injectable()
@@ -17,9 +18,9 @@ export class UserService {
     return await this.userRepo.getUserById(id);
   };
 
-  updateUser = async (
+  updateStatus = async (
     id: string,
-    userUpdate: UserDTO,
+    isStatus: Status,
   ): Promise<UserDTO | null> => {
     const user = await this.getUserById(id);
 
@@ -27,7 +28,7 @@ export class UserService {
       return null;
     }
 
-    return await this.userRepo.updateUser(id, userUpdate);
+    return await this.userRepo.updateUser(id, { isStatus: isStatus });
   };
 
   deleteUser = async (id: string): Promise<UserDTO | null> => {

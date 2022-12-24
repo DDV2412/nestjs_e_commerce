@@ -23,6 +23,7 @@ import { JwtAuthGuard } from 'src/utils/jwt.guard';
 import { Roles } from 'src/utils/roles.decorator';
 import { SecurityType } from 'src/utils/enum';
 import { RolesGuard } from 'src/utils/roles.guard';
+import { ErrorDTO } from '../dto/error.dto';
 
 @Controller('/api/product')
 @ApiTags('Product')
@@ -42,12 +43,12 @@ export class ProductController {
   @ApiResponse({
     status: 400,
     description: 'Product with product name not created!',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   async addProduct(@Body() productData: ProductDTO): Promise<ResponseData> {
     try {
@@ -83,12 +84,12 @@ export class ProductController {
   @ApiResponse({
     status: 404,
     description: 'Product with id not found!',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   async updateProduct(
     @Param('id') id: string,
@@ -135,12 +136,12 @@ export class ProductController {
   @ApiResponse({
     status: 404,
     description: 'Product with id not found!',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   async deleteProduct(@Param('id') id: string): Promise<ResponseData> {
     try {
@@ -173,12 +174,12 @@ export class ProductController {
   @ApiResponse({
     status: 404,
     description: 'Product with id not found!',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   async getProductById(@Param('id') id: string): Promise<ResponseData> {
     try {
@@ -219,7 +220,7 @@ export class ProductController {
   @ApiResponse({
     status: 500,
     description: 'Internal server error',
-    type: ProductDTO,
+    type: ErrorDTO,
   })
   async getAllProduct(): Promise<ResponseData> {
     try {
